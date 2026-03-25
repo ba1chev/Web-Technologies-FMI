@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+  <meta charset="UTF-8">
+  <title>Компютърни кешове — начало</title>
+</head>
+<body>
+  <header>
+    <h1>Компютърни кешове: принципи и роля в съвременните системи</h1>
+    <p>
+      Кратък образователен преглед за <strong>йерархията на паметта</strong>, <em>латентността</em> и
+      <em>пропускателната способност</em> в микропроцесорите.
+    </p>
+    <nav aria-label="Основна навигация по сайта">
+      <ul>
+        <li><a href="index.html">Начало</a></li>
+        <li><a href="about.html">Задълбочено</a></li>
+        <li><a href="timeline.html">Хронология</a></li>
+        <li><a href="data.html">Таблични данни</a></li>
+        <li><a href="contact.html">Контакт</a></li>
+      </ul>
+    </nav>
+  </header>
+  <main>
+    <section aria-labelledby="sadrzhanie-nachalo">
+      <h2 id="sadrzhanie-nachalo">Съдържание на тази страница</h2>
+      <nav aria-label="Вътрешна навигация">
+        <ul>
+          <li><a href="#vavedenie">Въведение</a></li>
+          <li><a href="#zashto-kesh">Защо съществува кешът</a></li>
+          <li><a href="#pamatna-hierarhiya">Паметна йерархия</a></li>
+          <li><a href="#media-razdel">Медия и илюстрация</a></li>
+        </ul>
+      </nav>
+    </section>
+
+    <section id="vavedenie">
+      <h2>Въведение</h2>
+      <p>
+        <abbr title="Central Processing Unit">CPU</abbr>-то изпълнява инструкции с честота, която далеч надхвърля
+        способността на основната памет да доставя данни без закъснение. За да се запълни тази разлика, архитектите
+        въвеждат <mark>малки, но много бързи буфери</mark> — кешове — между изчислителното ядро и
+        <abbr title="Random Access Memory">RAM</abbr>.
+      </p>
+      <blockquote cite="https://www.intel.com/content/www/us/en/developer/articles/technical/cache-basics.html">
+        <p>
+          Кешът е по-малка, по-бърза памет, която съхранява копия на данни от по-бавни нива на паметта, към които
+          достъпът е чест.
+        </p>
+      </blockquote>
+      <p>
+        Формално определение в учебната литература често следва подхода на
+        <cite>Hennessy и Patterson</cite> в „Computer Architecture: A Quantitative Approach“ — там кешът се разглежда
+        като част от модела на производителността на процесора.
+      </p>
+    </section>
+
+    <section id="zashto-kesh">
+      <h2>Защо съществува кешът</h2>
+      <p>
+        Законът на Амдал и практиката на сървърните натоварвания показват: дори перфектен паралелизъм не компенсира
+        <strong>чакането по памет</strong>. Кешът намалява средното време за достъп чрез <em>локалност на времето</em>
+        и <em>локалност на пространството</em> — повтарящи се обръщения и последователни адреси.
+      </p>
+      <ul>
+        <li>по-малка латентност спрямо <abbr title="Dynamic Random Access Memory">DRAM</abbr>;</li>
+        <li>по-широка вътрешна шина към ядрото;</li>
+        <li>скриване на променливата латентност на външната шина.</li>
+      </ul>
+    </section>
+
+    <section id="pamatna-hierarhiya">
+      <h2>Паметна йерархия (концептуално)</h2>
+      <p>
+        Типичната подредба е <time datetime="2020">от 2010-те насам</time> стандарт за настолни и сървърни
+        <abbr title="Central Processing Unit">CPU</abbr>: няколко нива
+        <abbr title="Static Random Access Memory">SRAM</abbr>-кеш, следвани от основна памет.
+      </p>
+      <figure>
+        <img src="images/hierarhiya-keshove.svg" width="520" height="280" alt="Блокова схема: CPU ядро, нива L1, L2, L3 и основна памет RAM">
+        <figcaption>
+          Концептуална йерархия: от ядрото към <abbr title="Random Access Memory">RAM</abbr>. Реалните размери и
+          политики зависят от конкретния микроархитектурен дизайн.
+        </figcaption>
+      </figure>
+    </section>
+
+    <section id="media-razdel">
+      <h2>Кратък аудио фрагмент (демонстрация)</h2>
+      <p>
+        По-долу е включен <em>демонстрационен</em> звуков файл — използвайте го, за да проверите поддръжката на
+        елемента <code>audio</code> във вашия браузър. Съдържанието е синтетичен сигнал, без реч.
+      </p>
+      <audio controls>
+        <source src="media/cache-explainer.wav" type="audio/wav">
+        Вашият браузър не поддържа вграждане на аудио.
+      </audio>
+    </section>
+  </main>
+  <footer>
+    <p>
+      Учебен проект по HTML — тема: компютърни кешове. Последна актуализация на съдържанието:
+      <time datetime="2026-03-25">25 март 2026 г.</time>
+    </p>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+  <meta charset="UTF-8">
+  <title>Компютърни кешове — задълбочено</title>
+</head>
+<body>
+  <header>
+    <h1>Задълбочен преглед: организация и политики на кеша</h1>
+    <nav aria-label="Основна навигация по сайта">
+      <ul>
+        <li><a href="index.html">Начало</a></li>
+        <li><a href="about.html">Задълбочено</a></li>
+        <li><a href="timeline.html">Хронология</a></li>
+        <li><a href="data.html">Таблични данни</a></li>
+        <li><a href="contact.html">Контакт</a></li>
+      </ul>
+    </nav>
+  </header>
+  <main>
+    <section>
+      <h2>Микроархитектурни нива</h2>
+      <p>
+        Съвременният <abbr title="Central Processing Unit">CPU</abbr> обикновено има <strong>разделни кешове за
+        инструкции и данни</strong> на първо ниво (<abbr title="Level 1">L1</abbr>
+        <abbr title="Instruction cache">I-cache</abbr> / <abbr title="Data cache">D-cache</abbr>), следвани от
+        унифициран или разделен <abbr title="Level 2">L2</abbr> и споделен <abbr title="Level 3">L3</abbr> между
+        ядрата в един сокет.
+      </p>
+      <img src="images/hierarhiya-keshove.svg" width="400" height="216" alt="Повторена схема на йерархията CPU–L1–L2–L3–RAM за контекст">
+    </section>
+
+    <section>
+      <h2>Ред на оценяване при липса в кеша</h2>
+      <p>
+        При <em>cache miss</em> контролерът за памет инициира транзакция към по-ниското ниво. Типичната последователност
+        на проверка е:
+      </p>
+      <ol>
+        <li><abbr title="Level 1">L1</abbr> — най-малка латентност, най-малък капацитет;</li>
+        <li><abbr title="Level 2">L2</abbr> — компромис между размер и скорост;</li>
+        <li><abbr title="Level 3">L3</abbr> — по-голям, често инклузивен или неинклузивен според дизайна;</li>
+        <li>основна <abbr title="Random Access Memory">RAM</abbr> и при нужда странична памет.</li>
+      </ol>
+    </section>
+
+    <section>
+      <h2>Ключови термини (речник)</h2>
+      <p>
+        По-долу са дефинирани понятия, които се срещат в анализа на кешовете и кохерентността в многопроцесорни
+        системи.
+      </p>
+      <dl>
+        <dt>Кеш линия (cache line)</dt>
+        <dd>
+          Минималната адресируема единица за прехвърляне между нива; обикновено 64 байта в потребителските
+          <abbr title="Central Processing Unit">CPU</abbr> от последните поколения.
+        </dd>
+        <dt>Асоциативност</dt>
+        <dd>
+          Брой „начина“, по които даден адрес може да се картотира в множество от линии — например 8-way set associative.
+        </dd>
+        <dt>Заместване (replacement)</dt>
+        <dd>
+          Политика при пълен сет: <abbr title="Least Recently Used">LRU</abbr> (приближения), случайно, псевдо-
+          <abbr title="Least Recently Used">LRU</abbr> и др.
+        </dd>
+        <dt>Write-through / Write-back</dt>
+        <dd>
+          Синхронно записване към по-ниското ниво срещу отложено „мръсно“ обновяване на линията при изтласкване.
+        </dd>
+        <dt>Кохерентност</dt>
+        <dd>
+          Протоколи като <abbr title="Modified, Exclusive, Shared, Invalid">MESI</abbr> поддържат съгласуван изглед
+          на паметта между ядра и кешове.
+        </dd>
+      </dl>
+    </section>
+
+    <section>
+      <h2>Цитат и акцент върху измерването</h2>
+      <blockquote>
+        <p>
+          Производителността на паметта често се свежда до <mark>последователност от попадения и пропуски</mark> в
+          йерархията — затова профилирането с хардуерни броячи (<em>performance counters</em>) е централно за
+          оптимизация.
+        </p>
+      </blockquote>
+      <p>
+        За самостоятелно проучване препоръчваме официалните ръководства на производителите на процесори и
+        документацията към инструменти като <cite>Linux perf</cite> за наблюдение на събития, свързани с кеша.
+      </p>
+    </section>
+  </main>
+  <footer>
+    <p>
+      Страница „Задълбочено“ — част от проекта за курс „Уеб технологии“.
+      <time datetime="2026-03-25">25.03.2026</time>
+    </p>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 280" role="img" aria-labelledby="title desc">
+  <title id="title">Memory hierarchy: CPU to RAM</title>
+  <desc id="desc">Block diagram from CPU core through L1, L2, L3 to main memory</desc>
+  <rect width="520" height="280" fill="#f8f9fa"/>
+  <text x="260" y="28" text-anchor="middle" font-family="system-ui,sans-serif" font-size="18" fill="#1a1a1a">Memory hierarchy (conceptual)</text>
+  <rect x="200" y="48" width="120" height="44" rx="6" fill="#2563eb"/>
+  <text x="260" y="76" text-anchor="middle" fill="#ffffff" font-family="system-ui,sans-serif" font-size="14">CPU core</text>
+  <line x1="260" y1="92" x2="260" y2="108" stroke="#334155" stroke-width="2"/>
+  <rect x="215" y="108" width="90" height="36" rx="4" fill="#38bdf8"/>
+  <text x="260" y="131" text-anchor="middle" fill="#0f172a" font-family="system-ui,sans-serif" font-size="12">L1</text>
+  <line x1="260" y1="144" x2="260" y2="156" stroke="#334155" stroke-width="2"/>
+  <rect x="200" y="156" width="120" height="36" rx="4" fill="#22c55e"/>
+  <text x="260" y="179" text-anchor="middle" fill="#ffffff" font-family="system-ui,sans-serif" font-size="12">L2</text>
+  <line x1="260" y1="192" x2="260" y2="204" stroke="#334155" stroke-width="2"/>
+  <rect x="175" y="204" width="170" height="36" rx="4" fill="#a855f7"/>
+  <text x="260" y="227" text-anchor="middle" fill="#ffffff" font-family="system-ui,sans-serif" font-size="12">L3 (shared)</text>
+  <line x1="260" y1="240" x2="260" y2="252" stroke="#334155" stroke-width="2"/>
+  <rect x="150" y="252" width="220" height="28" rx="4" fill="#64748b"/>
+  <text x="260" y="271" text-anchor="middle" fill="#ffffff" font-family="system-ui,sans-serif" font-size="12">Main memory (RAM)</text>
+</svg>

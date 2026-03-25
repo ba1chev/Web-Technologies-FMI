@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+  <meta charset="UTF-8">
+  <title>Компютърни кешове — контакт</title>
+</head>
+<body>
+  <header>
+    <h1>Контактна форма (учебна, без изпращане)</h1>
+    <nav aria-label="Основна навигация по сайта">
+      <ul>
+        <li><a href="index.html">Начало</a></li>
+        <li><a href="about.html">Задълбочено</a></li>
+        <li><a href="timeline.html">Хронология</a></li>
+        <li><a href="data.html">Таблични данни</a></li>
+        <li><a href="contact.html">Контакт</a></li>
+      </ul>
+    </nav>
+  </header>
+  <main>
+    <section>
+      <h2>Изпратете съобщение към автора на проекта</h2>
+      <p>
+        Формулярът е <strong>само за демонстрация на HTML</strong> — няма <code>action</code> към сървър и няма да
+        изпрати данни. Попълнете полетата, за да проверите семантиката и достъпността на маркировката.
+      </p>
+      <form method="get" action="#">
+        <fieldset>
+          <legend>Лични данни и предпочитания</legend>
+
+          <p>
+            <label for="ime">Пълно име</label><br>
+            <input type="text" id="ime" name="ime" autocomplete="name" required>
+          </p>
+
+          <p>
+            <label for="email">Имейл</label><br>
+            <input type="email" id="email" name="email" autocomplete="email" required>
+          </p>
+
+          <p>
+            <label for="godini">Възраст (години)</label><br>
+            <input type="number" id="godini" name="godini" min="16" max="120" step="1">
+          </p>
+
+          <p>
+            <label for="data-sreshta">Предпочитана дата за отговор</label><br>
+            <input type="date" id="data-sreshta" name="data_sreshta">
+          </p>
+
+          <fieldset>
+            <legend>Ниво на интерес към темата</legend>
+            <p>
+              <input type="radio" id="nivo-nachinaesh" name="nivo" value="beginner" checked>
+              <label for="nivo-nachinaesh">Запознавам се с темата</label>
+            </p>
+            <p>
+              <input type="radio" id="nivo-sredno" name="nivo" value="intermediate">
+              <label for="nivo-sredno">Имам опит с архитектура на процесори</label>
+            </p>
+            <p>
+              <input type="radio" id="nivo-naprednal" name="nivo" value="advanced">
+              <label for="nivo-naprednal">Работя с профилиране / оптимизация</label>
+            </p>
+          </fieldset>
+
+          <fieldset>
+            <legend>Теми за обратна връзка (множествен избор)</legend>
+            <p>
+              <input type="checkbox" id="tema-l1l2" name="tema" value="hierarhiya">
+              <label for="tema-l1l2">Йерархия L1/L2/L3</label>
+            </p>
+            <p>
+              <input type="checkbox" id="tema-mesi" name="tema" value="mesi">
+              <label for="tema-mesi">Кохерентност (<abbr title="Modified, Exclusive, Shared, Invalid">MESI</abbr>)</label>
+            </p>
+            <p>
+              <input type="checkbox" id="tema-side" name="tema" value="security">
+              <label for="tema-side">Кеш и странични канали</label>
+            </p>
+          </fieldset>
+
+          <p>
+            <label for="kategoriya">Категория на запитването</label><br>
+            <select id="kategoriya" name="kategoriya">
+              <option value="sadarzhanie">Съдържание на сайта</option>
+              <option value="iztochnici">Източници и точност</option>
+              <option value="drugo">Друго</option>
+            </select>
+          </p>
+
+          <p>
+            <label for="suobshtenie">Съобщение</label><br>
+            <textarea id="suobshtenie" name="suobshtenie" rows="6" cols="50" placeholder="Вашият текст тук…"></textarea>
+          </p>
+
+          <p>
+            <button type="submit">Изпрати (демонстрация)</button>
+          </p>
+        </fieldset>
+      </form>
+    </section>
+  </main>
+  <footer>
+    <p>
+      Контактна страница — проект по HTML.
+      <time datetime="2026-03-25">25.03.2026</time>
+    </p>
+  </footer>
+</body>
+</html>

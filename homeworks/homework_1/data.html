@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+  <meta charset="UTF-8">
+  <title>Компютърни кешове — таблични данни</title>
+</head>
+<body>
+  <header>
+    <h1>Сравнителни данни за кешове (илюстративна таблица)</h1>
+    <nav aria-label="Основна навигация по сайта">
+      <ul>
+        <li><a href="index.html">Начало</a></li>
+        <li><a href="about.html">Задълбочено</a></li>
+        <li><a href="timeline.html">Хронология</a></li>
+        <li><a href="data.html">Таблични данни</a></li>
+        <li><a href="contact.html">Контакт</a></li>
+      </ul>
+    </nav>
+  </header>
+  <main>
+    <section>
+      <h2>Таблица: типични параметри по нива</h2>
+      <p>
+        Стойностите са <strong>ориентировъчни</strong> и варират по поколение и сегмент (мобилен, настолен, сървърен).
+        Колоната „Типична латентност“ е индикативна и служи за <em>сравнение на порядъците</em>, не за абсолютни
+        гаранции в конкретна система.
+      </p>
+      <table>
+        <caption>
+          Илюстративно сравнение на нива кеш и основна памет при съвременен
+          <abbr title="Central Processing Unit">CPU</abbr> (порядъци на величини).
+        </caption>
+        <thead>
+          <tr>
+            <th scope="col">Ниво</th>
+            <th scope="col">Типичен обем (на ядро / споделен)</th>
+            <th scope="col">Типична латентност (ориентир)</th>
+            <th scope="col">Технология / бележка</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row"><abbr title="Level 1">L1</abbr> данни</th>
+            <td>32–64 KiB често</td>
+            <td>~4 цикъла</td>
+            <td>Най-близо до ядрото; отделен от <abbr title="Instruction">I</abbr>-кеш</td>
+          </tr>
+          <tr>
+            <th scope="row"><abbr title="Level 1">L1</abbr> инструкции</th>
+            <td>32–64 KiB често</td>
+            <td>~4 цикъла</td>
+            <td>Подава поток от инструкции към декодера</td>
+          </tr>
+          <tr>
+            <th scope="row"><abbr title="Level 2">L2</abbr></th>
+            <td>256 KiB – 1 MiB типично</td>
+            <td>~12 цикъла</td>
+            <td>Унифициран или разделен според дизайна</td>
+          </tr>
+          <tr>
+            <th scope="row"><abbr title="Level 3">L3</abbr></th>
+            <td>8–64 MiB (споделен между ядрата)</td>
+            <td>~30–40+ цикъла</td>
+            <td>Намалява натоварването към <abbr title="Dynamic Random Access Memory">DRAM</abbr></td>
+          </tr>
+          <tr>
+            <th scope="row">Основна памет</th>
+            <td>Гигабайти (системно)</td>
+            <td>~200+ цикъла</td>
+            <td><abbr title="Dynamic Random Access Memory">DRAM</abbr>; най-голям капацитет, най-висока латентност</td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="4">
+              Източник на числата: обобщение от публични микроархитектурни обзори и документация на производители;
+              за точни стойности вижте <cite>Software Optimization Manuals</cite> за съответната платформа.
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+    </section>
+
+    <section>
+      <h2>Бележка за употреба</h2>
+      <p>
+        Таблицата комбинира <mark>обем</mark>, <mark>латентност</mark> и <mark>технологичен контекст</mark> —
+        трите стълба, с които обикновено започва анализът на паметната подсистема в курсове по компютърна архитектура.
+      </p>
+    </section>
+  </main>
+  <footer>
+    <p>
+      Данните са с образователна цел.
+      <time datetime="2026-03-25">25 март 2026 г.</time>
+    </p>
+  </footer>
+</body>
+</html>
