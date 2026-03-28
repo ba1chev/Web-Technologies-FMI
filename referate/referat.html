@@ -84,7 +84,6 @@
           затова <a href="#fig-arch">фиг.&nbsp;1</a> е опростена картинка на стека, а <a href="#fig-flow">фиг.&nbsp;2</a> показва типичен ред на стъпките при повикване на <code>subtle</code>.
         </p>
         <figure id="fig-arch">
-          <!-- Етикетите в SVG са на английски, за да няма проблеми с кодиране при различни сървъри/архиви -->
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 320" width="720" height="320" class="referat-figure-svg" role="img" aria-labelledby="fig-arch-title">
             <title id="fig-arch-title">От уеб страницата към ОС: слоеве на Web Crypto</title>
             <defs>
@@ -387,19 +386,17 @@
   const digest = await crypto.subtle.digest('SHA-256', data);
   const bytes = new Uint8Array(digest);
   return Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('');
-}
-
-// Пример: await sha256Hex('hello web crypto');</pre>
+}</pre>
 
         <h3 id="code-aes">Код 2. Генериране на AES-GCM ключ и криптиране</h3>
         <pre class="prettyprint lang-js">async function aesGcmEncrypt(plaintextUtf8) {
-  const iv = crypto.getRandomValues(new Uint8Array(12)); // 96-битов IV за GCM
+  const iv = crypto.getRandomValues(new Uint8Array(12));
   const enc = new TextEncoder();
   const plaintext = enc.encode(plaintextUtf8);
 
   const key = await crypto.subtle.generateKey(
     { name: 'AES-GCM', length: 256 },
-    false, // неекстрактируем ключ
+    false,
     ['encrypt', 'decrypt']
   );
 
@@ -409,7 +406,7 @@
     plaintext
   );
 
-  return { iv, ciphertext }; // ciphertext е ArrayBuffer
+  return { iv, ciphertext };
 }</pre>
         <p>
           Няма да тръгнат без <code>subtle</code> и без сигурен контекст; в „истински“ проект добавяме още проверки за грешки и ясно кога ключът живее [1],[2],[5].
@@ -532,8 +529,6 @@
   <script src="directives/scDocument.js"></script>
   <script src="src/referatApp.js"></script>
   <script>
-    /* eslint-disable */
-    // Минимална „употреба“ на lodash според изискваната структура на проекта (предефиниране на helper):
     angular.module('referatApp').run(['$window', function ($window) {
       if ($window._ && typeof $window._.noop === 'function') { $window._.noop(); }
     }]);

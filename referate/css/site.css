@@ -1,4 +1,3 @@
-/* Реферат — оформление и типография */
 :root {
   --ref-ink: #1c1917;
   --ref-text: #292524;
@@ -16,7 +15,6 @@
   --ref-font-serif: Georgia, "Iowan Old Style", "Apple Garamond", "Times New Roman", Times, serif;
   --ref-font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --ref-font-mono: ui-monospace, "Cascadia Code", "Source Code Pro", Consolas, "Courier New", monospace;
-  /* Фиксиран navbar + два реда (brand + меню) + сянка — нужен е по-голям отстъп от минималната височина на .navbar */
   --ref-nav-offset: clamp(8.25rem, 6.25rem + 8vw, 11rem);
 }
 
@@ -32,7 +30,6 @@ html {
 }
 
 body {
-  /* Малък допълнителен въздух под лентата (анти-застъпване при различни DPI/мащаби) */
   padding-top: calc(var(--ref-nav-offset) + 0.75rem);
   margin: 0;
   font-family: var(--ref-font-serif);
@@ -43,7 +40,6 @@ body {
   min-height: 100vh;
 }
 
-/* Якори под фиксираната лента */
 [id] {
   scroll-margin-top: calc(var(--ref-nav-offset) + 1rem);
 }
@@ -75,7 +71,6 @@ main.referat-main {
   max-width: none;
 }
 
-/* Заглавна част */
 .referat-doc-header {
   padding-bottom: 1.25rem;
   margin-bottom: 0.5rem;
@@ -218,7 +213,6 @@ figcaption strong {
   color: var(--ref-text);
 }
 
-/* Таблици */
 .table-responsive {
   margin: 1.25rem 0;
   border-radius: calc(var(--ref-radius) - 2px);
@@ -265,7 +259,6 @@ figcaption strong {
   padding: 0.65rem 0.75rem;
 }
 
-/* Код */
 code,
 kbd {
   color: var(--ref-accent);
@@ -303,7 +296,6 @@ blockquote p:last-child {
   margin-bottom: 0;
 }
 
-/* Литература */
 .referat-bibliography .referat-literal-list {
   padding-left: 1.5rem;
   margin: 1rem 0 0;
@@ -335,7 +327,6 @@ footer.page-footer {
   margin-top: 2rem;
 }
 
-/* Skip link */
 .referat-skip {
   position: absolute;
   left: 8px;
@@ -362,7 +353,6 @@ footer.page-footer {
   box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.45);
 }
 
-/* Навигация */
 .navbar.referat-navbar-custom {
   background: linear-gradient(180deg, #3d342b 0%, #352d25 100%);
   border: 0;
@@ -414,7 +404,6 @@ footer.page-footer {
   }
 }
 
-/* Интерактивно демо */
 .referat-demo.panel {
   border-color: var(--ref-border-strong);
   border-radius: var(--ref-radius);
