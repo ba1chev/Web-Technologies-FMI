@@ -7,11 +7,9 @@
       replace: true,
       scope: {},
       template:
-        '<nav class="navbar navbar-fixed-top referat-navbar-custom" role="navigation" aria-label="Основна навигация">' +
-        '<div class="container-fluid referat-layout-width">' +
-        '<div class="navbar-header">' +
-        '<a class="navbar-brand" href="#tekst-start">Реферат · Web Crypto</a>' +
-        '</div>' +
+        '<nav class="navbar navbar-fixed-top referat-navbar-custom" aria-label="Основна навигация">' +
+        '<div class="container-fluid referat-layout-width referat-navbar-inner">' +
+        '<a class="referat-navbar-brand" href="#tekst-start">Реферат · Web Cryptography API</a>' +
         '<ul class="nav navbar-nav referat-navbar-links">' +
         '<li ng-repeat="l in links"><a ng-href="{{l.href}}">{{l.label}}</a></li>' +
         '</ul>' +
