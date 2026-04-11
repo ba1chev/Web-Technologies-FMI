@@ -1,0 +1,162 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #847996;
+}
+
+.container {
+    display: flex;
+    width: 900px;
+    min-height: 580px;
+    overflow: hidden;
+}
+
+.image-container {
+    flex: 1;
+    background-color: #847996;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.image-container img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.form-container {
+    flex: 1.2;
+    background-color: #eda1a1;
+    padding: 35px 40px;
+}
+
+h1 {
+    font-size: 1.6rem;
+    color: #3d3d3d;
+    margin-bottom: 20px;
+    font-style: italic;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    font-weight: bold;
+    color: #3d3d3d;
+    margin-bottom: 6px;
+    font-size: 0.95rem;
+}
+
+input[type="text"],
+input[type="date"],
+input[type="number"],
+select {
+    width: 100%;
+    padding: 15px;
+    margin-bottom: 20px;
+    border: none;
+    border-radius: 4px;
+    font-size: 0.95rem;
+    background-color: #fff;
+    color: #555;
+}
+
+input[type="text"]::placeholder,
+input[type="number"]::placeholder {
+    color: #aaa;
+}
+
+select {
+    appearance: auto;
+    cursor: pointer;
+}
+
+.upload-btn {
+    display: block;
+    width: 100%;
+    padding: 15px;
+    margin-bottom: 20px;
+    background-color: #d4d4d4;
+    border: none;
+    border-radius: 4px;
+    text-align: center;
+    font-weight: bold;
+    color: #3d3d3d;
+    cursor: pointer;
+    font-size: 0.95rem;
+}
+
+.upload-btn:hover {
+    background-color: #c0c0c0;
+}
+
+.gender-group {
+    border: none;
+    padding: 0;
+    margin-bottom: 20px;
+}
+
+.gender-group legend {
+    font-weight: bold;
+    color: #3d3d3d;
+    margin-bottom: 8px;
+    font-size: 0.95rem;
+}
+
+.gender-group label {
+    font-weight: normal;
+    margin-right: 20px;
+    cursor: pointer;
+}
+
+.gender-group input[type="radio"] {
+    margin-right: 5px;
+    accent-color: #555;
+}
+
+.nav-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+.btn-back,
+.btn-next {
+    padding: 15px 35px;
+    border: none;
+    border-radius: 25px;
+    font-size: 0.95rem;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.btn-back {
+    background-color: #3d3d3d;
+    color: #fff;
+}
+
+.btn-back:hover {
+    background-color: #555;
+}
+
+.btn-next {
+    background-color: #555;
+    color: #fff;
+}
+
+.btn-next:hover {
+    background-color: #3d3d3d;
+}
