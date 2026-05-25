@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 320" width="720" height="320" role="img" aria-labelledby="t-arch">
+  <title id="t-arch">Web Crypto: page to OS layers</title>
+  <defs>
+    <linearGradient id="g-top" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#e3ecf2"/><stop offset="100%" stop-color="#cfd9e2"/>
+    </linearGradient>
+    <linearGradient id="g-mid" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f7f0d8"/><stop offset="100%" stop-color="#e8dcb5"/>
+    </linearGradient>
+    <linearGradient id="g-bot" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#d9eee0"/><stop offset="100%" stop-color="#b8dfc8"/>
+    </linearGradient>
+    <marker id="mk-arr" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#4a5568"/>
+    </marker>
+  </defs>
+  <rect width="720" height="320" fill="#fafafa"/>
+  <rect x="40" y="28" width="640" height="52" rx="6" fill="url(#g-top)" stroke="#334155" stroke-width="1.5"/>
+  <text x="360" y="60" text-anchor="middle" font-family="Georgia,serif" font-size="15" font-weight="700" fill="#1e293b">Web page (HTML / JS)</text>
+  <path d="M360 80 L360 108" stroke="#64748b" stroke-width="1.5" marker-end="url(#mk-arr)"/>
+  <rect x="80" y="116" width="560" height="54" rx="6" fill="url(#g-mid)" stroke="#854d48" stroke-width="1.25"/>
+  <text x="360" y="148" text-anchor="middle" font-family="Georgia,serif" font-size="14" fill="#422006">JS: window.crypto / crypto.subtle</text>
+  <path d="M360 170 L360 198" stroke="#64748b" stroke-width="1.5" marker-end="url(#mk-arr)"/>
+  <rect x="60" y="206" width="600" height="66" rx="6" fill="url(#g-bot)" stroke="#166534" stroke-width="1.25"/>
+  <text x="360" y="236" text-anchor="middle" font-family="Georgia,serif" font-size="14" font-weight="700" fill="#14532d">Browser engine - Web Crypto</text>
+  <text x="360" y="256" text-anchor="middle" font-family="Georgia,serif" font-size="12" fill="#166534">OS / NSS / CommonCrypto / platform crypto</text>
+  <rect x="200" y="286" width="320" height="24" rx="4" fill="#e5e7eb" stroke="#6b7280"/>
+  <text x="360" y="303" text-anchor="middle" font-family="Georgia,serif" font-size="12" fill="#374151">Operating system</text>
+</svg>

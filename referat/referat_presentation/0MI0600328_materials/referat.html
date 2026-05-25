@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="bg" ng-app="referatApp">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="#352d25">
+  <meta name="description" content="Информационен реферат: Web Cryptography API — криптография в браузъра (SubtleCrypto, сигурен контекст, примери). Учебен проект по уеб технологии.">
+  <title>Криптографско API в уеб средата · реферат</title>
+  <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/bootstrap.css">
+  <link rel="stylesheet" href="css/bootstrap-responsive.css">
+  <link rel="stylesheet" href="css/site.css">
+</head>
+<body class="referat-body" ng-controller="ReferatCtrl">
+  <a class="referat-skip" href="#tekst-start">Към текста</a>
+
+  <sc-nav></sc-nav>
+
+  <main class="container-fluid" sc-document>
+    <article class="referat-document" id="tekst-start">
+      <header class="referat-doc-header">
+        <p class="referat-meta">Курс „Уеб технологии“ · реферат</p>
+        <h1>Криптографско <abbr title="Application Programming Interface">API</abbr> в уеб средата</h1>
+        <p class="referat-lead">
+          Става дума за <strong>Web Cryptography API</strong> — начинът, по който браузърът предлага криптография
+          на страницата (хешове, криптиране, подписи, работа с ключове), без да трябва да ползваме само чист JavaScript библиотеки.
+          Източниците за фактите са на английски и са описани в края; самият текст тук е на български.
+        </p>
+      </header>
+
+      <section id="vavedenie" aria-labelledby="h-vavedenie">
+        <h2 id="h-vavedenie">Въведение</h2>
+        <p>
+          В ежедневните приложения постоянно изникват задачи като вход, краткоживущи токени, криптиране на файл още в браузъра,
+          или поне проверка, че данните не са пипани. Каналът до сървъра обикновено минава през
+          <abbr title="Transport Layer Security">TLS</abbr>, но това не покрива всичко — понякога трябва операция изцяло при клиента.
+          Преди да има стандарта, хората въртяха криптография в обикновен JS: става, но често е по-бавно, по-трудно за преглед и по-чувствително към грешки в употребата.
+        </p>
+        <p>
+          <cite>Web Cryptography API</cite> описва по-ниско ниво на достъп: браузърът върши тежката част през свой
+          <abbr title="Application Programming Interface">API</abbr>, а ключът може да остане „заключен“ вътре — напр. като
+          <span lang="en"><i>non-extractable</i></span>, за да не излиза суровият материал без нужда [1].
+          В практиката го ползваме през <code>window.crypto</code> и <code>crypto.subtle</code> (тип
+          <span lang="en"><code>SubtleCrypto</code></span>) [2]. Думата <i lang="en">subtle</i> на практика значи:
+          детайлите имат значение; объркаш ли режима или параметрите, схемата може да се счупи макар алгоритъмът да е „силен“ [2].
+        </p>
+        <p class="referat-note">
+          <strong>Какво гледаме по-надолу.</strong> Кратко за <span lang="en">secure contexts</span>, основните операции
+          (хеш, <span lang="en">HMAC</span>, криптиране, подпис, ключове) и връзката със сървъра. Няма как да изброя поддръжката за всеки алгоритъм и всеки браузър —
+          за това са таблиците при Mozilla, Can I use и т.н. [2],[6].
+        </p>
+      </section>
+
+      <section id="scenarii" aria-labelledby="h-scen">
+        <h2 id="h-scen">Типични сценарии, за които се ползва API-то</h2>
+        <p>
+          Не е задължително да ползвате всичко от първия ден. В реални проекти често се започва от един-два сценария и после се разширява.
+          Ето няколко често срещани, които са в духа на самия стандарт [1]:
+        </p>
+        <ul class="referat-list">
+          <li>
+            <strong>Проверка на цялост преди качване.</strong> Файлът се хешира в браузъра, качва се и на сървъра — после двата дайджеста се сравняват.
+            Така хората виждат локално „отпечатъка“, преди да пратят големи данни [1],[2].
+          </li>
+          <li>
+            <strong>Криптиране още на устройството.</strong> Например клиентско криптиране преди облак: ключът не напуска машината на потребителя по начин, който приложението изрично не позволява [1].
+          </li>
+          <li>
+            <strong>Подпис на съдържание.</strong> Документ или пакет данни се подписва с частен ключ, а отсреща се проверява с публичен — класическият модел, но върху <span lang="en">Web Crypto</span> [1],[2].
+          </li>
+          <li>
+            <strong>Договаряне на сесия със сървър.</strong> Клиентът генерира или деривира ключ, предава само нужните публични части или опаковки, а TLS остава за канала [1],[7].
+          </li>
+        </ul>
+        <p>
+          Във всеки случай си струва да се запише на хартия (или в дизайн документ): кой държи ключа, къде е солта, как се върти <abbr title="Initialization Vector">IV</abbr>-то и какво точно гарантира сървърът. Иначе лесно се получава „криптирано“, но без ясен модел на заплахите [8].
+        </p>
+      </section>
+
+      <section id="api-osnovi" aria-labelledby="h-api-osnovi">
+        <h2 id="h-api-osnovi">Какво представлява Web Cryptography API</h2>
+        <p>
+          На ниво платформа нещата са подредени около обекта <code>Crypto</code> и „вътрешния“ интерфейс <code>SubtleCrypto</code>:
+          генериране и деривация на ключове, подпис, проверка, криптиране/декриптиране, хеш върху
+          <span lang="en"><code>ArrayBuffer</code></span> [1],[2]. Не е нужно да помним всичко наизуст — важно е да се види кой слой какво прави;
+          затова <a href="#fig-arch">фиг.&nbsp;1</a> е опростена картинка на стека, а <a href="#fig-flow">фиг.&nbsp;2</a> показва типичен ред на стъпките при повикване на <code>subtle</code>.
+        </p>
+        <figure id="fig-arch">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 320" width="720" height="320" class="referat-figure-svg" role="img" aria-labelledby="fig-arch-title">
+            <title id="fig-arch-title">От уеб страницата към ОС: слоеве на Web Crypto</title>
+            <defs>
+              <linearGradient id="fg1-top" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#e3ecf2"/><stop offset="100%" stop-color="#cfd9e2"/>
+              </linearGradient>
+              <linearGradient id="fg1-mid" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#f7f0d8"/><stop offset="100%" stop-color="#e8dcb5"/>
+              </linearGradient>
+              <linearGradient id="fg1-bot" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#d9eee0"/><stop offset="100%" stop-color="#b8dfc8"/>
+              </linearGradient>
+              <marker id="fg1-arr" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+                <path d="M0,0 L8,4 L0,8 Z" fill="#4a5568"/>
+              </marker>
+            </defs>
+            <rect width="720" height="320" fill="#fafafa"/>
+            <rect x="40" y="28" width="640" height="52" rx="6" fill="url(#fg1-top)" stroke="#334155" stroke-width="1.5"/>
+            <text x="360" y="60" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="15" font-weight="700" fill="#1e293b">Web page (HTML / JS)</text>
+            <path d="M360 80 L360 108" stroke="#64748b" stroke-width="1.5" marker-end="url(#fg1-arr)"/>
+            <rect x="80" y="116" width="560" height="54" rx="6" fill="url(#fg1-mid)" stroke="#854d48" stroke-width="1.25"/>
+            <text x="360" y="148" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="14" fill="#422006">JS: <tspan font-weight="700">window.crypto</tspan> · <tspan font-weight="700">crypto.subtle</tspan></text>
+            <path d="M360 170 L360 198" stroke="#64748b" stroke-width="1.5" marker-end="url(#fg1-arr)"/>
+            <rect x="60" y="206" width="600" height="66" rx="6" fill="url(#fg1-bot)" stroke="#166534" stroke-width="1.25"/>
+            <text x="360" y="236" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="14" font-weight="700" fill="#14532d">Browser engine — Web Crypto implementation</text>
+            <text x="360" y="256" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="12" fill="#166534">(often OS / NSS / CommonCrypto / platform crypto)</text>
+            <rect x="200" y="286" width="320" height="24" rx="4" fill="#e5e7eb" stroke="#6b7280"/>
+            <text x="360" y="303" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="12" fill="#374151">Operating system services</text>
+          </svg>
+          <figcaption><strong>Фигура 1.</strong> Идеята е проста: скриптът вика стандартния интерфейс, а „как точно се смята“ е работа на браузъра и платформата под него [1],[2].</figcaption>
+        </figure>
+        <figure id="fig-flow">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 260" width="680" height="260" class="referat-figure-svg" role="img" aria-labelledby="fig-flow-title">
+            <title id="fig-flow-title">Input, algorithm, key, subtle call, output buffer</title>
+            <defs>
+              <marker id="fg2-arr" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+                <path d="M0,0 L8,4 L0,8 Z" fill="#4a5568"/>
+              </marker>
+            </defs>
+            <rect width="680" height="260" fill="#fafafa"/>
+            <rect x="28" y="32" width="148" height="48" rx="5" fill="#e0e7ef" stroke="#334155" stroke-width="1.25"/>
+            <text x="102" y="61" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="13" font-weight="700" fill="#1e293b">Input bytes</text>
+            <path d="M176 56 H216" stroke="#64748b" stroke-width="1.5" marker-end="url(#fg2-arr)"/>
+            <rect x="224" y="26" width="216" height="58" rx="5" fill="#f7efd8" stroke="#92400e" stroke-width="1.25"/>
+            <text x="332" y="52" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="12" font-weight="700" fill="#78350f">Algorithm name</text>
+            <text x="332" y="72" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="11" fill="#92400e">e.g. SHA-256, AES-GCM...</text>
+            <path d="M440 55 H486" stroke="#64748b" stroke-width="1.5" marker-end="url(#fg2-arr)"/>
+            <rect x="494" y="32" width="158" height="48" rx="5" fill="#d8f0e0" stroke="#166534" stroke-width="1.25"/>
+            <text x="573" y="61" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="13" font-weight="700" fill="#14532d">Key / material</text>
+            <path d="M332 84 V112" stroke="#64748b" stroke-width="1.5" marker-end="url(#fg2-arr)"/>
+            <rect x="188" y="118" width="304" height="50" rx="5" fill="#f3e8ff" stroke="#6b21a8" stroke-width="1.25"/>
+            <text x="340" y="148" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="13" font-weight="700" fill="#4c1d95">Call: subtle.digest / encrypt / sign …</text>
+            <path d="M340 168 V194" stroke="#64748b" stroke-width="1.5" marker-end="url(#fg2-arr)"/>
+            <rect x="210" y="200" width="260" height="42" rx="5" fill="#e5e7eb" stroke="#4b5563"/>
+            <text x="340" y="226" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="13" font-weight="700" fill="#374151">ArrayBuffer result</text>
+          </svg>
+          <figcaption><strong>Фигура 2.</strong> Първо се подготвят данните, алгоритъмът и ключът (или материалът за ключ), после се вика конкретният метод; резултатът пак е бинарен буфер [1],[2].</figcaption>
+        </figure>
+        <p>
+          Извикванията са асинхронни и връщат <span lang="en">Promise</span>, за да не задръстват нишката на интерфейса при по-тежки сметки [2].
+          Стандартът също така държи нещата сравнително стегнати — не е „направи си криптото както ти харесва“, а списък от ясно именувани алгоритми и режими [1].
+        </p>
+        <h3 id="h-crypto-ostanaloto">Какво има освен <code>subtle</code></h3>
+        <p>
+          Същият глобален <code>crypto</code> обект носи и неща извън <code>SubtleCrypto</code>. Най-често се ползва
+          <code>crypto.getRandomValues</code>, за да се напълни <span lang="en"><code>Uint8Array</code></span> с криптографски подходящи случайни байтове [14].
+          Това не е мястото за <code>Math.random()</code> — той е детерминиран от по-стари генератори и не е подходящ за токени, соли или <abbr title="Initialization Vector">IV</abbr>-та [14].
+        </p>
+        <p>
+          Импортът и експортът на ключове често минава през <span lang="en">JWK</span> (JSON) или бинарни формати като <span lang="en">PKCS #8</span> / <span lang="en">SPKI</span> — удобно е при обмяна със сървър, но форматът трябва да съответства на очакванията на кода на гърба [1],[2].
+        </p>
+        <p>
+          Работниците (<span lang="en">Web Workers</span>) също могат да имат достъп до <span lang="en">Web Crypto</span>, което помага, ако искате тежки операции извън основната нишка. Детайлите зависят от типа работник и политиките на браузъра — проверката пак е експериментално с вашия билд [2].
+        </p>
+      </section>
+
+      <section id="bezopasen-kontekst" aria-labelledby="h-secure">
+        <h2 id="h-secure">Безопасен контекст и политики за достъп</h2>
+        <p>
+          <code>crypto.subtle</code> на практика изисква <strong>сигурен контекст</strong> (<span lang="en">secure context</span>) —
+          най-често <abbr title="Hypertext Transfer Protocol Secure">HTTPS</abbr> или поне <code>localhost</code>, докато донагласяте проекта [3].
+          Ако това липсва, при различни браузъри или няма да видите <code>subtle</code>, или ще хвърля грешки; затова тестваме в реалната среда, а не само „на сухо“ [2],[3].
+        </p>
+        <blockquote cite="https://www.w3.org/TR/secure-contexts/">
+          <p>
+            Идеята на модела е: чувствителни възможности (вкл. криптография в браузъра) да се пускат само когато контекстът е достатъчно сигурен, за да не се размива границата на платформената сигурност [3].
+          </p>
+        </blockquote>
+        <p>
+          В код това често значи ранна проверка и ясно съобщение, ако сайтът е отворен по обикновен HTTP насред продукция.
+          И <span lang="en">mixed content</span> може да обърка нещата — смесени нешифрирани ресурси към HTTPS страница са отделна тема, но засягат същите политики [3],[4].
+        </p>
+        <p>
+          Локално често отваряте <code>referat.html</code> през <code>file://</code>. При някои браузъри това <em>не</em> е сигурен контекст или <code>subtle</code> просто липсва — не че проектът е счупен, а че политиката е нарочно строга [2],[3],[13].
+          За демото по-долу и за собствени тестове е по-надеждно да пуснете малък локален сървър (например <code>python3 -m http.server</code> от папката на сайта и отваряне на <code>http://127.0.0.1:…/referat.html</code>).
+        </p>
+      </section>
+
+      <section id="subtlecrypto" aria-labelledby="h-subtle">
+        <h2 id="h-subtle"><span lang="en">SubtleCrypto</span>: операции и ключове</h2>
+        <p>
+          През <code>SubtleCrypto</code> минават нещата като <code>digest</code>, <code>sign</code>, <code>verify</code>,
+          <code>encrypt</code>, <code>decrypt</code>, деривация (<code>deriveBits</code>, <code>deriveKey</code>),
+          импорт/експорт и <code>generateKey</code> [1],[2]. Флагът <span lang="en"><code>extractable</code></span> още от пръв поглед показва
+          дали някой се опитва да изкара суров ключ навън — удобно, когато целта е точно обратното [1].
+        </p>
+        <p>
+          <a href="#tab-methods">Табл.&nbsp;1</a> ги наредих по групи само за ориентир. Реалният „дали работи при мен“ списък пак е в документацията и таблиците за съвместимост [1],[2],[6].
+        </p>
+        <div class="table-responsive" id="tab-methods">
+          <table class="table table-bordered table-striped">
+            <caption class="text-left"><strong>Таблица 1.</strong> Групи методи на <code>SubtleCrypto</code> и типични сценарии.</caption>
+            <thead>
+              <tr>
+                <th scope="col">Група</th>
+                <th scope="col">Примерен метод</th>
+                <th scope="col">Примерна употреба</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Хеширане</td>
+                <td><code>digest</code></td>
+                <td>Цялост на файл, конструиране на <span lang="en">key derivation</span> вериги</td>
+              </tr>
+              <tr>
+                <td>Симетрично</td>
+                <td><code>encrypt</code> / <code>decrypt</code></td>
+                <td><span lang="en">AES-GCM</span>, <span lang="en">ChaCha20-Poly1305</span> (ако е налично)</td>
+              </tr>
+              <tr>
+                <td>Асиметрично</td>
+                <td><code>sign</code> / <code>verify</code></td>
+                <td><span lang="en">ECDSA</span>, <span lang="en">RSA-PSS</span></td>
+              </tr>
+              <tr>
+                <td>Ключове</td>
+                <td><code>generateKey</code>, <code>deriveKey</code></td>
+                <td>Създаване на сесийни ключове, <span lang="en">HKDF</span>, <span lang="en">PBKDF2</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p>
+          Малък, но важен детайл: при <span lang="en">AES-GCM</span> <abbr title="Initialization Vector">IV</abbr>-то не е украса —
+          ако го преизползвате със същия ключ, режимът се счупва [5]. В клиентски код това се случва по-често, отколкото ни се иска, ако състоянието не се държи изрядно.
+        </p>
+      </section>
+
+      <section id="algoritmi" aria-labelledby="h-algo">
+        <h2 id="h-algo">Алгоритми, съвместимост и ориентири за избор</h2>
+        <p>
+          Имената на алгоритмите не са произволен низ — има регистър: <code>SHA-256</code>, <code>AES-GCM</code>, <code>PBKDF2</code>,
+          <code>HKDF</code>, <code>ECDSA</code> и т.н. Едно нещо е какво пише в спецификацията, друго е какво е включено в конкретния браузър [1].
+          В реален проект почти винаги има проверка „дали този import/generate минава“ [2],[6].
+          Няколко ориентира по често ползвани конструкции са дадени в <a href="#tab-support">табл.&nbsp;2</a>.
+        </p>
+        <div class="table-responsive" id="tab-support">
+          <table class="table table-bordered">
+            <caption class="text-left"><strong>Таблица 2.</strong> Ориентировъчна поддръжка (индикативно; валидирайте в целевия браузър) [2],[6].</caption>
+            <thead>
+              <tr>
+                <th scope="col">Алгоритъм / режим</th>
+                <th scope="col">Бележка за поддръжка</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>SHA-256</code> (<code>digest</code>)</td>
+                <td>Широко наличен в съвременни потребителски агенти</td>
+              </tr>
+              <tr>
+                <td><code>AES-GCM</code></td>
+                <td>Чест избор за симетрично криптиране в браузъра при коректен <abbr title="Initialization Vector">IV</abbr></td>
+              </tr>
+              <tr>
+                <td><code>ECDSA</code> с криви на <abbr title="National Institute of Standards and Technology">NIST</abbr></td>
+                <td>Подписи и удостоверяване на съобщения; валидирайте кривата и хеша [1],[5]</td>
+              </tr>
+              <tr>
+                <td><code>Ed25519</code></td>
+                <td>По-нова регистрация; сравнете таблиците за версиите на браузъра/двигателя [1],[2],[12]</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p>
+          Ако някой реши да „хешира паролата още в браузъра“, само <code>digest</code> не става — трябва нещо бавно и солено като
+          <code>PBKDF2</code> (или еквивалент със смислена цена на операцията), плюс какво точно прави сървърът после [9].
+          И да — това не отменя нуждата от <abbr title="Transport Layer Security">TLS</abbr> по мрежата [4],[7].
+        </p>
+        <h3 id="h-greshki">Подводни камъни (накратко)</h3>
+        <p>
+          Три неща, които виждам често при курсови и малки прототипи: (1) да се ползва един и същ <abbr title="Initialization Vector">IV</abbr> при <span lang="en">GCM</span> „за по-лесно тестване“;
+          (2) да се хешира парола само с <code>digest</code> и да се вярва, че това е „солена“ защита; (3) да се пренебрегне сигурният контекст и после да се чудим защо <code>subtle</code> е <span lang="en">undefined</span> [2],[5],[9].
+          Разделете ясно: какво защитава <abbr title="Transport Layer Security">TLS</abbr>, какво прави клиентската криптография и какво вярва сървърът след получаване на данните [7],[8].
+          За бързо сравнение „чиста JS библиотека“ срещу нативния <span lang="en">Web Crypto</span> виж <a href="#tab-compare">табл.&nbsp;3</a>.
+        </p>
+        <div class="table-responsive" id="tab-compare">
+          <table class="table table-bordered table-striped">
+            <caption class="text-left"><strong>Таблица 3.</strong> Сравнение на подход: чист JS библиотека срещу нативен <span lang="en">Web Crypto</span> (обобщено) [1],[2].</caption>
+            <thead>
+              <tr>
+                <th scope="col">Критерий</th>
+                <th scope="col">Библиотека в JS</th>
+                <th scope="col"><span lang="en">Web Cryptography API</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">Скорост</th>
+                <td>Зависи от JS двигателя; тежките режими усещат се на слаби устройства.</td>
+                <td>Обикновено по-близо до нативен код на платформата [2].</td>
+              </tr>
+              <tr>
+                <th scope="row">Управление на ключове</th>
+                <td>Ключовете са байтове в паметта на страницата — лесно за дебъг, трудно да се скрият.</td>
+                <td>Има път чрез <span lang="en">non-extractable</span> ключове и импорт/експорт по правила [1].</td>
+              </tr>
+              <tr>
+                <th scope="row">Одит и повършина</th>
+                <td>Повече код под ваш контрол — и повече място за грешка.</td>
+                <td>По-малък „периметър“ в приложния JS, но параметрите пак трябва да са верни [1],[2].</td>
+              </tr>
+              <tr>
+                <th scope="row">Офлайн / среда</th>
+                <td>Работи и там, където няма <code>subtle</code> (но тогава сигурността е друг разговор).</td>
+                <td>Иска сигурен контекст и съвместим браузър [2],[3].</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="poddrzshka" aria-labelledby="h-poddr">
+        <h2 id="h-poddr">Интеграция с екосистемата: <abbr title="Transport Layer Security">TLS</abbr>, сървър и бъдещи разширения</h2>
+        <p>
+          <abbr title="Transport Layer Security">TLS</abbr> пази тръбата до сървъра [7]. Web Crypto е за неща <em>вътре</em> в страницата:
+          подпис преди изпращане, криптиране на blob, деривиране на ключ преди мрежовата заявка и т.н. Как точно ги комбинираш — вече зависи от модела на заплахите [4],[8].
+        </p>
+        <p>
+          За сравнение, <cite>WebAuthn</cite> е друг стандарт за силен вход с ключове и автентикатори [10] — тема със собствени детайли, но в същия ъгъл на сигурността.
+          За случайни байтове пък обикновено ползваме <code>crypto.getRandomValues</code> [14].
+        </p>
+        <p>
+          Накрая, стандартът не премахва нуждата от добра сървърна логика: подписът или ciphertext-ът трябва да се приемат с ясни правила, да има версиониране на протокола и да не се разчита единствено на „невидимост“ на клиентския код [8].
+        </p>
+      </section>
+
+      <section id="demo-interactive" aria-labelledby="h-demo">
+        <h2 id="h-demo">Малко интерактивно демо</h2>
+        <p>
+          Това не е пълноправно приложение, а учебен експеримент в самата страница: вижда се дали средата отговаря на изискванията за <code>crypto.subtle</code> и може да се пресметне един <code>SHA-256</code> дайджест от произволен текст.
+          Стойностите идват директно от браузъра ви [2],[13].
+        </p>
+        <div class="referat-demo panel panel-default" aria-live="polite">
+          <div class="panel-body">
+            <dl class="referat-demo-dl dl-horizontal">
+              <dt>Протокол</dt>
+              <dd><code>{{ env.protocol }}</code></dd>
+              <dt><span lang="en">isSecureContext</span></dt>
+              <dd><span ng-class="{'text-success': env.secure, 'text-danger': !env.secure}">{{ env.secure ? 'да' : 'не' }}</span></dd>
+              <dt><code>crypto.subtle</code></dt>
+              <dd><span ng-class="{'text-success': env.subtle, 'text-danger': !env.subtle}">{{ env.subtle ? 'наличен' : 'липсва' }}</span></dd>
+            </dl>
+            <p class="referat-note" ng-if="!env.subtle">
+              Тук <code>subtle</code> не е достъпен — демо бутонът няма да работи. Пуснете страницата през <code>http://localhost</code> или друг сигурен контекст [2],[3],[13].
+            </p>
+            <div class="form-group">
+              <label for="digest-input">Текст за хеширане (<code>UTF-8</code>)</label>
+              <textarea id="digest-input" class="form-control referat-demo-textarea" rows="3" ng-model="digestInput"></textarea>
+            </div>
+            <p>
+              <button type="button" class="btn referat-btn-action" ng-click="refreshEnv(); computeSha256()" ng-disabled="!env.subtle || digestBusy">
+                {{ digestBusy ? 'Смята се…' : 'Пресметни SHA-256 (hex)' }}
+              </button>
+            </p>
+            <p ng-if="digestError" class="text-danger"><strong>Грешка:</strong> {{ digestError }}</p>
+            <div ng-if="digestHex">
+              <p class="referat-demo-label"><strong>Резултат:</strong></p>
+              <pre class="referat-demo-out">{{ digestHex }}</pre>
+            </div>
+          </div>
+        </div>
+        <p class="referat-demo-hint">
+          Този блок използва Angular за формата и директно извиква <code>crypto.subtle.digest</code>. Ако сравните с <a href="#code-digest">код&nbsp;1</a>, ще видите същата идея на практика [2]. За флага <span lang="en">isSecureContext</span> виж [13].
+        </p>
+      </section>
+
+      <section id="primer-kod" aria-labelledby="h-kod">
+        <h2 id="h-kod">Илюстративни програмни фрагменти</h2>
+        <p>
+          Две мини-примера с <span lang="en">async/await</span> (може и чисти <span lang="en">Promise</span>, ако предпочитате) [2].
+          <a href="#code-digest">Код&nbsp;1</a> — <code>SHA-256</code>; <a href="#code-aes">код&nbsp;2</a> — ключ и <span lang="en">AES-GCM</span>.
+        </p>
+        <h3 id="code-digest">Код 1. Хеширане чрез <code>digest</code> (SHA-256)</h3>
+        <pre class="prettyprint lang-js">async function sha256Hex(messageUtf8) {
+  const enc = new TextEncoder();
+  const data = enc.encode(messageUtf8);
+  const digest = await crypto.subtle.digest('SHA-256', data);
+  const bytes = new Uint8Array(digest);
+  return Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('');
+}</pre>
+
+        <h3 id="code-aes">Код 2. Генериране на AES-GCM ключ и криптиране</h3>
+        <pre class="prettyprint lang-js">async function aesGcmEncrypt(plaintextUtf8) {
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const enc = new TextEncoder();
+  const plaintext = enc.encode(plaintextUtf8);
+
+  const key = await crypto.subtle.generateKey(
+    { name: 'AES-GCM', length: 256 },
+    false,
+    ['encrypt', 'decrypt']
+  );
+
+  const ciphertext = await crypto.subtle.encrypt(
+    { name: 'AES-GCM', iv },
+    key,
+    plaintext
+  );
+
+  return { iv, ciphertext };
+}</pre>
+        <p>
+          Няма да тръгнат без <code>subtle</code> и без сигурен контекст; в „истински“ проект добавяме още проверки за грешки и ясно кога ключът живее [1],[2],[5].
+        </p>
+      </section>
+
+      <section id="literatura" aria-labelledby="h-lit" class="no-print referat-bibliography">
+        <h2 id="h-lit">Цитирана литература и списъци към приложението</h2>
+        <p>
+          Източниците са на английски, с номер в текста и пълно описание тук (според изискванията на курса).
+        </p>
+        <ol class="referat-literal-list">
+          <li id="src-w3c-webcrypto">
+            W3C, „Web Cryptography API“, W3C Recommendation, 26 January 2017,
+            <a href="https://www.w3.org/TR/2017/REC-WebCryptoAPI-20170126/" rel="noopener">https://www.w3.org/TR/2017/REC-WebCryptoAPI-20170126/</a>,
+            последно посетен на 2026-03-28. (Актуална работа по наследник „Web Cryptography Level 2“:
+            <a href="https://www.w3.org/TR/webcrypto-2/" rel="noopener">https://www.w3.org/TR/webcrypto-2/</a>, First Public Working Draft, 22 April 2025.)
+          </li>
+          <li id="src-mdn-webcrypto">
+            MDN contributors, „Web Crypto API“, MDN Web Docs,
+            <a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Crypto_API" rel="noopener">https://developer.mozilla.org/en-US/docs/Web/API/Web_Crypto_API</a>,
+            последно посетен на 2026-03-28.
+          </li>
+          <li id="src-w3c-secure-contexts">
+            W3C, „Secure Contexts“, W3C Candidate Recommendation Draft, 13 February 2025,
+            <a href="https://www.w3.org/TR/secure-contexts/" rel="noopener">https://www.w3.org/TR/secure-contexts/</a>,
+            последно посетен на 2026-03-28.
+          </li>
+          <li id="src-mdn-mixed">
+            MDN contributors, „Mixed content“, MDN Web Docs,
+            <a href="https://developer.mozilla.org/en-US/docs/Web/Security/Mixed_content" rel="noopener">https://developer.mozilla.org/en-US/docs/Web/Security/Mixed_content</a>,
+            последно посетен на 2026-03-28.
+          </li>
+          <li id="src-nist-sp800-38d">
+            NIST, „Recommendation for Block Cipher Modes of Operation: Galois/Counter Mode (GCM) and GMAC“,
+            NIST Special Publication 800-38D, Computer Security Resource Center,
+            <a href="https://csrc.nist.gov/publications/detail/sp/800-38d/final" rel="noopener">https://csrc.nist.gov/publications/detail/sp/800-38d/final</a>,
+            последно посетен на 2026-03-28.
+          </li>
+          <li id="src-canius-subtle">
+            „SubtleCrypto — browser compatibility“, Can I use…,
+            <a href="https://caniuse.com/mdn-api_subtlecrypto" rel="noopener">https://caniuse.com/mdn-api_subtlecrypto</a>,
+            последно посетен на 2026-03-28.
+          </li>
+          <li id="src-rfc8446">
+            E. Rescorla, „The Transport Layer Security (TLS) Protocol Version 1.3“, RFC 8446, IETF, August 2018,
+            <a href="https://www.rfc-editor.org/rfc/rfc8446" rel="noopener">https://www.rfc-editor.org/rfc/rfc8446</a>,
+            последно посетен на 2026-03-28.
+          </li>
+          <li id="src-owasp-asm">
+            OWASP Foundation, „OWASP Application Security Verification Standard“, project documentation (latest release),
+            <a href="https://owasp.org/www-project-application-security-verification-standard/" rel="noopener">https://owasp.org/www-project-application-security-verification-standard/</a>,
+            последно посетен на 2026-03-28.
+          </li>
+          <li id="src-nist-sp800-132">
+            NIST, „Recommendation for Password-Based Key Derivation, Part 1: Storage Applications“,
+            NIST Special Publication 800-132, Computer Security Resource Center,
+            <a href="https://csrc.nist.gov/publications/detail/sp/800-132/final" rel="noopener">https://csrc.nist.gov/publications/detail/sp/800-132/final</a>,
+            последно посетен на 2026-03-28.
+          </li>
+          <li id="src-w3c-webauthn">
+            W3C and FIDO Alliance, „Web Authentication: An API for accessing Public Key Credentials Level 2“,
+            W3C Recommendation, 7 April 2025,
+            <a href="https://www.w3.org/TR/webauthn-2/" rel="noopener">https://www.w3.org/TR/webauthn-2/</a>,
+            последно посетен на 2026-03-28.
+          </li>
+          <li id="src-whatwg-fetch">
+            WHATWG, „Fetch Standard“ (living standard), algorithms for fetching, credentials, and network policies,
+            <a href="https://fetch.spec.whatwg.org/" rel="noopener">https://fetch.spec.whatwg.org/</a>,
+            последно посетен на 2026-03-28.
+          </li>
+          <li id="src-rfc8032">
+            S. Josefsson and I. Liusvaara, „Edwards-Curve Digital Signature Algorithm (EdDSA)“, RFC 8032, IETF, January 2017,
+            <a href="https://www.rfc-editor.org/rfc/rfc8032" rel="noopener">https://www.rfc-editor.org/rfc/rfc8032</a>,
+            последно посетен на 2026-03-28.
+          </li>
+          <li id="src-mdn-secure-context-flag">
+            MDN contributors, „Window: isSecureContext property“, MDN Web Docs,
+            <a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/isSecureContext" rel="noopener">https://developer.mozilla.org/en-US/docs/Web/API/Window/isSecureContext</a>,
+            последно посетен на 2026-03-28.
+          </li>
+          <li id="src-mdn-getrandomvalues">
+            MDN contributors, „Crypto: getRandomValues() method“, MDN Web Docs,
+            <a href="https://developer.mozilla.org/en-US/docs/Web/API/Crypto/getRandomValues" rel="noopener">https://developer.mozilla.org/en-US/docs/Web/API/Crypto/getRandomValues</a>,
+            последно посетен на 2026-03-28.
+          </li>
+        </ol>
+
+        <h3>Списък с фигури</h3>
+        <ul class="referat-literal-list">
+          <li><a href="#fig-arch">Фигура 1.</a> Слоеве страница → JS API → браузър → ОС (вградена в <code>referat.html</code>; същата идея в <code>img/01_01_webcrypto_architecture.svg</code> за архива).</li>
+          <li><a href="#fig-flow">Фигура 2.</a> Поток към <code>crypto.subtle</code> (вградена; копие в <code>img/01_02_subtlecrypto_flow.svg</code>).</li>
+        </ul>
+
+        <h3>Списък с таблици</h3>
+        <ul class="referat-literal-list">
+          <li><a href="#tab-methods">Таблица 1.</a> Групи методи на <code>SubtleCrypto</code> и типични сценарии.</li>
+          <li><a href="#tab-support">Таблица 2.</a> Ориентировъчна съвместимост по алгоритми (индикативно).</li>
+          <li><a href="#tab-compare">Таблица 3.</a> JS библиотека срещу нативен <span lang="en">Web Crypto</span>.</li>
+        </ul>
+
+        <h3>Списък с примерен програмен код</h3>
+        <ul class="referat-literal-list">
+          <li><a href="#code-digest">Код 1.</a> Хеширане чрез <code>digest</code> (SHA-256).</li>
+          <li><a href="#code-aes">Код 2.</a> Генериране на AES-GCM ключ и криптиране.</li>
+        </ul>
+      </section>
+
+      <footer class="page-footer">
+        <p>Учебна страница, {{ footerYear }}. Не ползвайте като единствен съвет за продукционна сигурност.</p>
+      </footer>
+    </article>
+  </main>
+
+  <script src="javascript/angular.min.js"></script>
+  <script src="javascript/lodash.js"></script>
+  <script src="javascript/prettify.js"></script>
+  <script src="directives/scDirectives.js"></script>
+  <script src="directives/scNav.js"></script>
+  <script src="directives/scDocument.js"></script>
+  <script src="src/referatApp.js"></script>
+  <script>
+    angular.module('referatApp').run(['$window', function ($window) {
+      if ($window._ && typeof $window._.noop === 'function') { $window._.noop(); }
+    }]);
+  </script>
+</body>
+</html>

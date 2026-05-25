@@ -1,0 +1,17 @@
+@media print {
+  .navbar,
+  .no-print {
+    display: none !important;
+  }
+  body {
+    padding-top: 0 !important;
+    background: #fff !important;
+  }
+  .referat-document {
+    box-shadow: none !important;
+    border: 1px solid #ccc !important;
+  }
+  a[href]::after {
+    font-size: 0.75em;
+  }
+}
